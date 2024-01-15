@@ -14,7 +14,7 @@ function createTextNode(nodeValue: string): ReactElement {
 		},
 	};
 }
-export function createElement(
+function createElement(
 	type: string,
 	props: ReactElementProps,
 	...children: ReactElementChildren[]
@@ -29,3 +29,7 @@ export function createElement(
 		},
 	};
 }
+
+export default {
+	createElement,
+};

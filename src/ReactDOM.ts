@@ -11,6 +11,7 @@ function render(reactNode: ReactElement, container: HTMLElement) {
 			dom[prop] = reactNode.props[prop];
 		}
 	}
+	// TODO fiber
 	for (const child of reactNode.props.children) {
 		render(child, dom as HTMLElement);
 	}
