@@ -6,10 +6,12 @@
   "scripts": {
     "dev": "bunx --bun vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test":"vitest"
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.1",
-    "vite": "^4.4.5"
+    "vite": "^4.4.5",
+    "vitest": "^1.2.0"
   }
 }
