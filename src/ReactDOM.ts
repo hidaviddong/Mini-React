@@ -4,7 +4,9 @@ import { setNextFiber, setRootFiber, nextFiber, workLoop } from "./Scheduler";
 function render(reactNode: ReactElement, container: HTMLElement) {
 	setNextFiber({
 		type: reactNode.type,
-		props: reactNode.props,
+		props: {
+			children: [reactNode],
+		},
 		sibling: null,
 		child: null,
 		return: null,
