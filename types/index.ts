@@ -13,3 +13,15 @@ export type ReactElementChildren = ReactElement | string;
 export enum REACT_ELEMENT {
 	TEXT_ELEMENT = "TEXT_ELEMENT",
 }
+
+export interface FiberNode {
+	type: string;
+	props: ReactElementProps;
+
+	child: FiberNode | null;
+	sibling: FiberNode | null;
+	return: FiberNode | null;
+	parent: FiberNode | null;
+	index: number;
+	dom: HTMLElement | Text | null;
+}

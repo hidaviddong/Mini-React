@@ -2,6 +2,7 @@
 
 - [x] createRoot,render
 - [x] tsx
-- [ ] fiber
+- [x] scheduler
+- [x] fiber
 - [ ] function component
 - [ ] hooks
