@@ -1,13 +1,8 @@
 import type { ReactElement } from "../types";
-import {
-	setNextWorkOfUnit,
-	setRootFiber,
-	nextWorkOfUnit,
-	workLoop,
-} from "./Scheduler";
+import { setNextFiber, setRootFiber, nextFiber, workLoop } from "./Scheduler";
 
 function render(reactNode: ReactElement, container: HTMLElement) {
-	setNextWorkOfUnit({
+	setNextFiber({
 		type: reactNode.type,
 		props: reactNode.props,
 		sibling: null,
@@ -17,7 +12,7 @@ function render(reactNode: ReactElement, container: HTMLElement) {
 		index: 0,
 		dom: container,
 	});
-	setRootFiber(nextWorkOfUnit);
+	setRootFiber(nextFiber);
 }
 
 export function createRoot(domNode: HTMLElement) {

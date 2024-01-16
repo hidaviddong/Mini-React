@@ -1,49 +1,49 @@
 import { FiberNode, REACT_ELEMENT } from "../types";
 
-export let nextWorkOfUnit: FiberNode | null = null;
+export let nextFiber: FiberNode | null = null;
 export let rootFiber: FiberNode | null = null;
-export function setNextWorkOfUnit(workOfUnit: FiberNode) {
-	nextWorkOfUnit = workOfUnit;
+export function setNextFiber(fiber: FiberNode) {
+	nextFiber = fiber;
 }
 export function setRootFiber(fiber: FiberNode | null) {
 	rootFiber = fiber;
 }
 
-export function performUnitOfWork(workUnit: FiberNode) {
+export function performUnitOfWork(fiber: FiberNode) {
 	// 处理dom
-	if (!workUnit.dom) {
-		workUnit.dom =
-			workUnit.type === REACT_ELEMENT.TEXT_ELEMENT
+	if (!fiber.dom) {
+		fiber.dom =
+			fiber.type === REACT_ELEMENT.TEXT_ELEMENT
 				? document.createTextNode("")
-				: document.createElement(workUnit.type);
+				: document.createElement(fiber.type);
 
-		const dom = workUnit.dom;
-		const container = workUnit.parent?.dom as HTMLElement;
+		const dom = fiber.dom;
+		const container = fiber.parent?.dom as HTMLElement;
 		container.append(dom);
 		// 处理props
-		for (const prop of Object.keys(workUnit.props)) {
+		for (const prop of Object.keys(fiber.props)) {
 			if (prop !== "children") {
-				dom[prop] = workUnit.props[prop];
+				dom[prop] = fiber.props[prop];
 			}
 		}
 	}
 	// 构造fiber架构
 
-	const children = workUnit.props.children;
+	const children = fiber.props.children;
 	let prevChild: FiberNode | null = null;
 	children.forEach((child, index) => {
 		const newWork: FiberNode = {
 			type: child.type,
 			props: child.props,
 			child: null,
-			parent: workUnit,
+			parent: fiber,
 			sibling: null,
 			dom: null,
 			return: null,
 			index: 0,
 		};
 		if (index === 0) {
-			workUnit.child = newWork;
+			fiber.child = newWork;
 		} else {
 			if (prevChild) {
 				prevChild.sibling = newWork;
@@ -52,21 +52,20 @@ export function performUnitOfWork(workUnit: FiberNode) {
 		prevChild = newWork;
 	});
 
-	if (workUnit.child) {
-		return workUnit.child;
+	if (fiber.child) {
+		return fiber.child;
 	}
-	if (workUnit.sibling) {
-		return workUnit.sibling;
+	if (fiber.sibling) {
+		return fiber.sibling;
 	}
-	return workUnit.parent?.sibling || null;
+	return fiber.parent?.sibling || null;
 }
 
 export function workLoop(deadline: IdleDeadline) {
 	let shouldYield = false;
 
-	while (!shouldYield && nextWorkOfUnit) {
-		console.log(nextWorkOfUnit);
-		nextWorkOfUnit = performUnitOfWork(nextWorkOfUnit);
+	while (!shouldYield && nextFiber) {
+		nextFiber = performUnitOfWork(nextFiber);
 		shouldYield = deadline.timeRemaining() < 1;
 	}
 	requestIdleCallback(workLoop);
