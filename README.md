@@ -4,5 +4,6 @@
 - [x] tsx
 - [x] scheduler
 - [x] fiber
+- [x] commit
 - [ ] function component
 - [ ] hooks

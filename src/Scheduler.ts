@@ -16,14 +16,10 @@ export function performUnitOfWork(fiber: FiberNode) {
 			fiber.type === REACT_ELEMENT.TEXT_ELEMENT
 				? document.createTextNode("")
 				: document.createElement(fiber.type);
-
-		const dom = fiber.dom;
-		const container = fiber.parent?.dom as HTMLElement;
-		container.append(dom);
 		// 处理props
 		for (const prop of Object.keys(fiber.props)) {
 			if (prop !== "children") {
-				dom[prop] = fiber.props[prop];
+				fiber.dom[prop] = fiber.props[prop];
 			}
 		}
 	}
@@ -61,12 +57,26 @@ export function performUnitOfWork(fiber: FiberNode) {
 	return fiber.parent?.sibling || null;
 }
 
+function commitRoot(fiber: FiberNode) {
+	if (!fiber) return;
+	const dom = fiber.dom;
+	const container = fiber.parent?.dom as HTMLElement;
+	dom && container.append(dom);
+	fiber.child && commitRoot(fiber.child);
+	fiber.sibling && commitRoot(fiber.sibling);
+}
+
 export function workLoop(deadline: IdleDeadline) {
 	let shouldYield = false;
 
 	while (!shouldYield && nextFiber) {
 		nextFiber = performUnitOfWork(nextFiber);
 		shouldYield = deadline.timeRemaining() < 1;
+	}
+	if (!nextFiber && rootFiber) {
+		// 统一提交
+		rootFiber.child && commitRoot(rootFiber.child);
+		rootFiber = null;
 	}
 	requestIdleCallback(workLoop);
 }
