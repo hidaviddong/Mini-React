@@ -11,21 +11,24 @@ export function setRootFiber(fiber: FiberNode | null) {
 
 export function performUnitOfWork(fiber: FiberNode) {
 	// 处理dom
-	if (!fiber.dom) {
+	if (typeof fiber.type !== "function" && !fiber.dom) {
+		// createFiberDOM
 		fiber.dom =
 			fiber.type === REACT_ELEMENT.TEXT_ELEMENT
 				? document.createTextNode("")
 				: document.createElement(fiber.type);
-		// 处理props
+		// 处理props updateProps
 		for (const prop of Object.keys(fiber.props)) {
 			if (prop !== "children") {
 				fiber.dom[prop] = fiber.props[prop];
 			}
 		}
 	}
-	// 构造fiber架构
 
-	const children = fiber.props.children;
+	// 构造fiber架构 createFiber
+	// 区分function component 的情况
+	const children =
+		typeof fiber.type === "function" ? [fiber.type()] : fiber.props.children;
 	let prevChild: FiberNode | null = null;
 	children.forEach((child, index) => {
 		const newWork: FiberNode = {
@@ -59,6 +62,10 @@ export function performUnitOfWork(fiber: FiberNode) {
 
 function commitRoot(fiber: FiberNode) {
 	if (!fiber) return;
+
+	while (fiber.parent && !fiber.parent.dom) {
+		fiber.parent = fiber.parent.parent;
+	}
 	const dom = fiber.dom;
 	const container = fiber.parent?.dom as HTMLElement;
 	dom && container.append(dom);

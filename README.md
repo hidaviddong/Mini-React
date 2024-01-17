@@ -5,5 +5,7 @@
 - [x] scheduler
 - [x] fiber
 - [x] commit
-- [ ] function component
+- [x] function component
+- [ ] event binding
+- [ ] update props
 - [ ] hooks

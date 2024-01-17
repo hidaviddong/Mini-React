@@ -14,8 +14,9 @@ export enum REACT_ELEMENT {
 	TEXT_ELEMENT = "TEXT_ELEMENT",
 }
 
+type FiberNodeFunctionType = () => FiberNode;
 export interface FiberNode {
-	type: string;
+	type: FiberNodeFunctionType | string;
 	props: ReactElementProps;
 
 	child: FiberNode | null;
