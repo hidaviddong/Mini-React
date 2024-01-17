@@ -2,6 +2,7 @@ import type { ReactElement } from "../types";
 import { setNextFiber, setRootFiber, nextFiber, workLoop } from "./Scheduler";
 
 function render(reactNode: ReactElement, container: HTMLElement) {
+	// 第一次调用
 	setNextFiber({
 		type: reactNode.type,
 		props: {

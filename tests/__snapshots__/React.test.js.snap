@@ -1,4 +1,37 @@
-// Bun Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`React > should create react element > 
+        {
+          "props": {
+            "children": [
+              {
+                "props": {
+                  "children": [],
+                  "nodeValue": "hello",
+                },
+                "type": "TEXT_ELEMENT",
+              },
+            ],
+            "className": "foo",
+          },
+          "type": "h1",
+        } 1`] = `
+{
+  "props": {
+    "children": [
+      {
+        "props": {
+          "children": [],
+          "nodeValue": "hello",
+        },
+        "type": "TEXT_ELEMENT",
+      },
+    ],
+    "className": "foo",
+  },
+  "type": "h1",
+}
+`;
 
 exports[`React should create react element: 
         {
