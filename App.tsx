@@ -2,24 +2,14 @@ import React from "./src/React";
 function App() {
 	return (
 		<div id="hey">
-			Hello
-			<p>World</p>
-			<h1>Hi</h1>
-			<input />
-			<Layout />
+			<Layout num={10} />
+			<Layout num={20} />
 		</div>
 	);
 }
 
-function Foo() {
-	return <div>Foo</div>;
-}
-function Layout() {
-	return (
-		<div>
-			<Foo />
-		</div>
-	);
+function Layout({ num }) {
+	return <p>the number is :{num}</p>;
 }
 
 export default App;

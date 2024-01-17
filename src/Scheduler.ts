@@ -28,7 +28,9 @@ export function performUnitOfWork(fiber: FiberNode) {
 	// 构造fiber架构 createFiber
 	// 区分function component 的情况
 	const children =
-		typeof fiber.type === "function" ? [fiber.type()] : fiber.props.children;
+		typeof fiber.type === "function"
+			? [fiber.type(fiber.props)]
+			: fiber.props.children;
 	let prevChild: FiberNode | null = null;
 	children.forEach((child, index) => {
 		const newWork: FiberNode = {
@@ -54,10 +56,13 @@ export function performUnitOfWork(fiber: FiberNode) {
 	if (fiber.child) {
 		return fiber.child;
 	}
-	if (fiber.sibling) {
-		return fiber.sibling;
+	let _fiber: FiberNode | null = fiber;
+	// 解决多个组件传props时渲染失败的问题
+	while (_fiber) {
+		if (_fiber.sibling) return _fiber.sibling;
+		_fiber = _fiber.parent;
 	}
-	return fiber.parent?.sibling || null;
+	return null;
 }
 
 function commitRoot(fiber: FiberNode) {

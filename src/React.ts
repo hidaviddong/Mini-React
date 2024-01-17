@@ -24,7 +24,9 @@ function createElement(
 		props: {
 			...props,
 			children: children.map((child) => {
-				return typeof child === "string" ? createTextNode(child) : child;
+				const isStringOrNumber =
+					typeof child === "string" || typeof child === "number";
+				return isStringOrNumber ? createTextNode(child) : child;
 			}),
 		},
 	};
