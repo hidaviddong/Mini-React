@@ -17,6 +17,11 @@ function commitHostComponent(fiber: FiberNode) {
 	// 处理props updateProps
 	for (const prop of Object.keys(fiber.props)) {
 		if (prop !== "children") {
+			// event binding
+			if (prop.startsWith("on")) {
+				const eventName = prop.slice(2).toLowerCase();
+				fiber.dom.addEventListener(eventName, fiber.props[prop]);
+			}
 			fiber.dom[prop] = fiber.props[prop];
 		}
 	}

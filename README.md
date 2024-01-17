@@ -7,6 +7,6 @@
 - [x] commit
 - [x] function component
 - [x] props
-- [ ] event binding
+- [x] event binding
 - [ ] update props
 - [ ] hooks
