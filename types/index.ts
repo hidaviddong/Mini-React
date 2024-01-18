@@ -18,11 +18,12 @@ type FiberNodeFunctionType = (...args) => FiberNode;
 export interface FiberNode {
 	type: FiberNodeFunctionType | string;
 	props: ReactElementProps;
-
+	alternate?: FiberNode | null;
 	child: FiberNode | null;
 	sibling: FiberNode | null;
 	return: FiberNode | null;
 	parent: FiberNode | null;
 	index: number;
 	dom: HTMLElement | Text | null;
+	effectTag?: string;
 }

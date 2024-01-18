@@ -1,18 +1,13 @@
 import React from "./src/React";
+import { update } from "./src/Scheduler";
+let count = 0;
 function App() {
 	function handleClick() {
-		console.log("click");
+		count++;
+		update();
 	}
-	return (
-		<div id="hey">
-			<p>Hello World</p>
-			<Layout num={10} />
-			<Layout num={20} />
-			<input />
-			{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
-			<button onClick={handleClick}>click me </button>
-		</div>
-	);
+	// biome-ignore lint/a11y/useButtonType: <explanation>
+	return <button onClick={handleClick}>{count}</button>;
 }
 
 function Layout({ num }) {
