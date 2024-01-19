@@ -6,12 +6,17 @@ function App() {
 		count++;
 		update();
 	}
-	// biome-ignore lint/a11y/useButtonType: <explanation>
-	return <button onClick={handleClick}>{count}</button>;
+	return (
+		<div>
+			<p onClick={handleClick}>{count}</p>
+			<div>Hello World</div>
+			<Foo num={12} />
+			<Foo num={14} />
+		</div>
+	);
 }
 
-function Layout({ num }) {
-	return <p id={num}>the number is :{num}</p>;
+function Foo({ num }) {
+	return <div>This is the Child Component,the value is :{num}</div>;
 }
-
 export default App;
