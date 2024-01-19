@@ -8,5 +8,5 @@
 - [x] function component
 - [x] props
 - [x] event binding
-- [ ] update props
+- [x] update props
 - [ ] hooks
