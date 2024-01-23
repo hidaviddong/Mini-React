@@ -1,25 +1,39 @@
 import React from "./src/React";
 import { update } from "./src/Scheduler";
-let showBar = false;
+
+let fooCount = 0;
+let barCount = 0;
 function Foo() {
-	const bar = <div>bar</div>;
-	function handleShowBar() {
-		showBar = !showBar;
+	const handleButtonClick = () => {
+		fooCount++;
 		update();
-	}
+	};
 	return (
 		<div>
 			Foo
-			{showBar && bar}
-			<button onClick={handleShowBar}>showBar</button>
+			{fooCount}
+			<button onClick={handleButtonClick}>click</button>
+		</div>
+	);
+}
+function Bar() {
+	const handleButtonClick = () => {
+		barCount++;
+		update();
+	};
+	return (
+		<div>
+			Bar
+			{barCount}
+			<button onClick={handleButtonClick}>click</button>
 		</div>
 	);
 }
 function App() {
 	return (
 		<div>
-			Hi
 			<Foo />
+			<Bar />
 		</div>
 	);
 }
