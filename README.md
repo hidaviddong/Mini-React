@@ -10,4 +10,5 @@
 - [x] event binding
 - [x] update props
 - [x] update child in different tag
+- [x] update nested child in tag
 - [ ] hooks

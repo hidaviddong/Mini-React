@@ -135,6 +135,11 @@ function initChildren(children: Array<any>, fiber: FiberNode) {
 		}
 		prevChild = newFiber;
 	});
+	// 删除嵌套节点的情况
+	while (oldFiber) {
+		oldFiberArray.push(oldFiber);
+		oldFiber = oldFiber.sibling;
+	}
 }
 
 function updateFunctionComponent(fiber: FiberNode) {
