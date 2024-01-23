@@ -3,7 +3,7 @@ import type { ReactElement } from "../types";
 let nextWorkOfUnit: FiberNode;
 let root: FiberNode | null;
 let currentRoot: FiberNode;
-
+let oldFiberArray: Array<FiberNode>;
 function workLoop(deadline: IdleDeadline) {
 	let shouldYield = false;
 
@@ -18,12 +18,24 @@ function workLoop(deadline: IdleDeadline) {
 }
 
 function commitRoot() {
+	typeof oldFiberArray === "object" && oldFiberArray.forEach(commitDelete);
 	root?.child && commitWork(root.child);
-
 	if (root) {
 		currentRoot = root;
 	}
 	root = null;
+	oldFiberArray = [];
+}
+function commitDelete(fiber: FiberNode) {
+	if (fiber.dom) {
+		let fiberParent = fiber.parent;
+		while (!fiberParent?.dom) {
+			fiberParent = fiberParent?.parent;
+		}
+		fiberParent.dom?.removeChild(fiber.dom);
+	} else {
+		fiber.child && commitDelete(fiber.child);
+	}
 }
 
 function commitWork(fiber: FiberNode) {
@@ -99,8 +111,6 @@ function initChildren(children: Array<any>, fiber: FiberNode) {
 				effectTag: "update",
 			};
 		} else {
-			// create
-			console.log(child);
 			newFiber = {
 				type: child.type,
 				props: child.props,
@@ -111,6 +121,9 @@ function initChildren(children: Array<any>, fiber: FiberNode) {
 				alternate: null,
 				effectTag: "create",
 			};
+			if (oldFiber) {
+				oldFiberArray.push(oldFiber);
+			}
 		}
 		if (oldFiber) {
 			oldFiber = oldFiber.sibling;

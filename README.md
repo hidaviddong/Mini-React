@@ -9,4 +9,5 @@
 - [x] props
 - [x] event binding
 - [x] update props
+- [x] update child in different tag
 - [ ] hooks
