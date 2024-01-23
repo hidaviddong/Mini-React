@@ -12,4 +12,5 @@
 - [x] update child in different tag
 - [x] update nested child in tag
 - [x] dont render boolean node
+- [ ] too many renders
 - [ ] hooks

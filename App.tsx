@@ -4,6 +4,7 @@ import { update } from "./src/Scheduler";
 let fooCount = 0;
 let barCount = 0;
 function Foo() {
+	console.log("Foo update");
 	const handleButtonClick = () => {
 		fooCount++;
 		update();
@@ -17,6 +18,7 @@ function Foo() {
 	);
 }
 function Bar() {
+	console.log("Bar update");
 	const handleButtonClick = () => {
 		barCount++;
 		update();

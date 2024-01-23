@@ -1,7 +1,7 @@
 import { FiberNode, REACT_ELEMENT, FiberNodeFunctionType } from "../types";
 import type { ReactElement } from "../types";
 let nextWorkOfUnit: FiberNode;
-let root: FiberNode | null;
+let wipRoot: FiberNode | null;
 let currentRoot: FiberNode;
 let oldFiberArray: Array<FiberNode>;
 function workLoop(deadline: IdleDeadline) {
@@ -11,7 +11,7 @@ function workLoop(deadline: IdleDeadline) {
 		nextWorkOfUnit = performUnitOfWork(nextWorkOfUnit) as FiberNode;
 		shouldYield = deadline.timeRemaining() < 1;
 	}
-	if (!nextWorkOfUnit && root) {
+	if (!nextWorkOfUnit && wipRoot) {
 		commitRoot();
 	}
 	requestIdleCallback(workLoop);
@@ -19,11 +19,11 @@ function workLoop(deadline: IdleDeadline) {
 
 function commitRoot() {
 	typeof oldFiberArray === "object" && oldFiberArray.forEach(commitDelete);
-	root?.child && commitWork(root.child);
-	if (root) {
-		currentRoot = root;
+	wipRoot?.child && commitWork(wipRoot.child);
+	if (wipRoot) {
+		currentRoot = wipRoot;
 	}
-	root = null;
+	wipRoot = null;
 	oldFiberArray = [];
 }
 function commitDelete(fiber: FiberNode) {
@@ -193,17 +193,16 @@ export function render(el: ReactElement, container: HTMLElement) {
 		},
 	};
 
-	root = nextWorkOfUnit;
+	wipRoot = nextWorkOfUnit;
 }
 
 export function update() {
-	nextWorkOfUnit = {
+	wipRoot = {
 		dom: currentRoot.dom,
 		props: currentRoot.props,
 		alternate: currentRoot,
 	};
-
-	root = nextWorkOfUnit;
+	nextWorkOfUnit = wipRoot;
 }
 
 requestIdleCallback(workLoop);
