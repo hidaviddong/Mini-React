@@ -97,7 +97,7 @@ function initChildren(children: Array<any>, fiber: FiberNode) {
 	let prevChild: FiberNode;
 	children.forEach((child, index) => {
 		const isSameType = oldFiber && oldFiber?.type === child.type;
-		let newFiber: FiberNode;
+		let newFiber: FiberNode | null;
 		if (isSameType) {
 			// update(diff)
 			newFiber = {
@@ -111,16 +111,21 @@ function initChildren(children: Array<any>, fiber: FiberNode) {
 				effectTag: "update",
 			};
 		} else {
-			newFiber = {
-				type: child.type,
-				props: child.props,
-				child: null,
-				parent: fiber,
-				dom: null,
-				sibling: null,
-				alternate: null,
-				effectTag: "create",
-			};
+			// 如果child 为 boolean 就不创建值
+			if (typeof child !== "boolean") {
+				newFiber = {
+					type: child.type,
+					props: child.props,
+					child: null,
+					parent: fiber,
+					dom: null,
+					sibling: null,
+					alternate: null,
+					effectTag: "create",
+				};
+			} else {
+				newFiber = null;
+			}
 			if (oldFiber) {
 				oldFiberArray.push(oldFiber);
 			}
@@ -128,12 +133,14 @@ function initChildren(children: Array<any>, fiber: FiberNode) {
 		if (oldFiber) {
 			oldFiber = oldFiber.sibling;
 		}
-		if (index === 0) {
-			fiber.child = newFiber;
-		} else {
-			prevChild.sibling = newFiber;
+		if (newFiber) {
+			if (index === 0) {
+				fiber.child = newFiber;
+			} else {
+				prevChild.sibling = newFiber;
+			}
+			prevChild = newFiber;
 		}
-		prevChild = newFiber;
 	});
 	// 删除嵌套节点的情况
 	while (oldFiber) {

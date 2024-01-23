@@ -23,9 +23,12 @@ function createElement(
 		type,
 		props: {
 			...props,
-			children: children.map((child) =>
-				typeof child === "object" ? child : createTextNode(child),
-			),
+			children: children.map((child) => {
+				if (typeof child === "string" || typeof child === "number") {
+					return createTextNode(child);
+				}
+				return child;
+			}),
 		},
 	};
 }
