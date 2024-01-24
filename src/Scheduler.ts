@@ -1,14 +1,19 @@
 import { FiberNode, REACT_ELEMENT, FiberNodeFunctionType } from "../types";
 import type { ReactElement } from "../types";
-let nextWorkOfUnit: FiberNode;
+let nextWorkOfUnit: FiberNode | null;
 let wipRoot: FiberNode | null;
-let currentRoot: FiberNode;
+let wipFiber: FiberNode | null;
+let currentRoot: FiberNode | null;
 let oldFiberArray: Array<FiberNode>;
+
 function workLoop(deadline: IdleDeadline) {
 	let shouldYield = false;
 
 	while (!shouldYield && nextWorkOfUnit) {
 		nextWorkOfUnit = performUnitOfWork(nextWorkOfUnit) as FiberNode;
+		if (wipRoot?.sibling?.type === nextWorkOfUnit?.type) {
+			nextWorkOfUnit = null;
+		}
 		shouldYield = deadline.timeRemaining() < 1;
 	}
 	if (!nextWorkOfUnit && wipRoot) {
@@ -20,9 +25,9 @@ function workLoop(deadline: IdleDeadline) {
 function commitRoot() {
 	typeof oldFiberArray === "object" && oldFiberArray.forEach(commitDelete);
 	wipRoot?.child && commitWork(wipRoot.child);
-	if (wipRoot) {
-		currentRoot = wipRoot;
-	}
+
+	currentRoot = wipRoot;
+
 	wipRoot = null;
 	oldFiberArray = [];
 }
@@ -96,7 +101,7 @@ function initChildren(children: Array<any>, fiber: FiberNode) {
 	let oldFiber = fiber.alternate?.child;
 	let prevChild: FiberNode;
 	children.forEach((child, index) => {
-		const isSameType = oldFiber && oldFiber?.type === child.type;
+		const isSameType = oldFiber && oldFiber.type === child.type;
 		let newFiber: FiberNode | null;
 		if (isSameType) {
 			// update(diff)
@@ -112,7 +117,7 @@ function initChildren(children: Array<any>, fiber: FiberNode) {
 			};
 		} else {
 			// 如果child 为 boolean 就不创建值
-			if (typeof child !== "boolean") {
+			if (child) {
 				newFiber = {
 					type: child.type,
 					props: child.props,
@@ -133,6 +138,7 @@ function initChildren(children: Array<any>, fiber: FiberNode) {
 		if (oldFiber) {
 			oldFiber = oldFiber.sibling;
 		}
+
 		if (newFiber) {
 			if (index === 0) {
 				fiber.child = newFiber;
@@ -150,6 +156,7 @@ function initChildren(children: Array<any>, fiber: FiberNode) {
 }
 
 function updateFunctionComponent(fiber: FiberNode) {
+	wipFiber = fiber;
 	const fiberType = fiber.type as FiberNodeFunctionType;
 	const children = [fiberType(fiber.props)];
 	initChildren(children, fiber);
@@ -197,12 +204,15 @@ export function render(el: ReactElement, container: HTMLElement) {
 }
 
 export function update() {
-	wipRoot = {
-		dom: currentRoot.dom,
-		props: currentRoot.props,
-		alternate: currentRoot,
+	const currentFiber = wipFiber;
+	return () => {
+		// 闭包
+		wipRoot = {
+			...(currentFiber as FiberNode),
+			alternate: currentFiber,
+		};
+		nextWorkOfUnit = wipRoot;
 	};
-	nextWorkOfUnit = wipRoot;
 }
 
 requestIdleCallback(workLoop);

@@ -5,9 +5,10 @@ let fooCount = 0;
 let barCount = 0;
 function Foo() {
 	console.log("Foo update");
+	const _update = update();
 	const handleButtonClick = () => {
 		fooCount++;
-		update();
+		_update();
 	};
 	return (
 		<div>
@@ -19,9 +20,10 @@ function Foo() {
 }
 function Bar() {
 	console.log("Bar update");
+	const _update = update();
 	const handleButtonClick = () => {
 		barCount++;
-		update();
+		_update();
 	};
 	return (
 		<div>
