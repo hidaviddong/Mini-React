@@ -12,5 +12,5 @@
 - [x] update child in different tag
 - [x] update nested child in tag
 - [x] dont render boolean node
-- [ ] decrease render time
+- [x] decrease render time
 - [ ] hooks
