@@ -4,7 +4,7 @@ import {
 	FiberNodeFunctionType,
 	StateHook,
 } from "../types";
-import type { ReactElement } from "../types";
+import type { EffectHook, ReactElement } from "../types";
 let nextWorkOfUnit: FiberNode | null;
 let wipRoot: FiberNode | null;
 let wipFiber: FiberNode | null;
@@ -31,11 +31,30 @@ function workLoop(deadline: IdleDeadline) {
 function commitRoot() {
 	typeof oldFiberArray === "object" && oldFiberArray.forEach(commitDelete);
 	wipRoot?.child && commitWork(wipRoot.child);
-
+	commitEffectHook();
 	currentRoot = wipRoot;
 
 	wipRoot = null;
 	oldFiberArray = [];
+}
+function commitEffectHook() {
+	function run(fiber: FiberNode) {
+		if (!fiber.alternate) {
+			// init 需要调用callback
+			fiber.effectHook?.callback();
+		} else {
+			// 后续只需要更新的时候 值改变的时候调用副作用函数
+			const oldEffectHook = fiber.alternate.effectHook;
+			const shouldUpdate = oldEffectHook?.depends.some((o, i) => {
+				return o !== fiber.effectHook?.depends[i];
+			});
+			shouldUpdate && fiber.effectHook?.callback();
+		}
+
+		fiber.child && run(fiber.child);
+		fiber.sibling && run(fiber.sibling);
+	}
+	if (wipRoot) run(wipRoot);
 }
 function commitDelete(fiber: FiberNode) {
 	if (fiber.dom) {
@@ -260,4 +279,13 @@ export function useState(initValue: any) {
 	return [stateHook.state, setState];
 }
 
+export function useEffect(callback, depends) {
+	const effectHook: EffectHook = {
+		callback,
+		depends,
+	};
+	if (wipFiber) {
+		wipFiber.effectHook = effectHook;
+	}
+}
 requestIdleCallback(workLoop);

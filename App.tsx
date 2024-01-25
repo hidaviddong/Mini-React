@@ -1,19 +1,31 @@
 import React from "./src/React";
-import { useState } from "./src/Scheduler";
+import { useState, useEffect } from "./src/Scheduler";
 
 function Foo() {
 	const [count, setCount] = useState(0);
 	const [anotherCount, setAnotherCount] = useState(1);
-	const handleButtonClick = () => {
-		setCount(count + 1);
-		setAnotherCount(anotherCount + 1);
-	};
+	useEffect(() => {
+		console.log("Hello useEffect");
+	}, [count]);
 	return (
 		<div>
 			<h1>Foo</h1>
 			{count}
+			<button
+				onClick={() => {
+					setCount(count + 1);
+				}}
+			>
+				count click
+			</button>
 			{anotherCount}
-			<button onClick={handleButtonClick}>click</button>
+			<button
+				onClick={() => {
+					setAnotherCount(anotherCount + 1);
+				}}
+			>
+				another count click
+			</button>
 		</div>
 	);
 }

@@ -19,6 +19,10 @@ export type StateHook = {
 	state: any;
 	queue: Array<any>;
 };
+export type EffectHook = {
+	callback: any;
+	depends: Array<any>;
+};
 export interface FiberNode {
 	type?: FiberNodeFunctionType | string;
 	props: ReactElementProps;
@@ -31,4 +35,5 @@ export interface FiberNode {
 	dom: HTMLElement | Text | null;
 	effectTag?: string;
 	stateHooks?: StateHook[];
+	effectHook?: EffectHook;
 }
