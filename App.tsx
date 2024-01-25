@@ -4,9 +4,15 @@ import { useState, useEffect } from "./src/Scheduler";
 function Foo() {
 	const [count, setCount] = useState(0);
 	const [anotherCount, setAnotherCount] = useState(1);
+
 	useEffect(() => {
-		console.log("Hello useEffect");
+		console.log("Hello anotherCountEffect");
+	}, [anotherCount]);
+
+	useEffect(() => {
+		console.log("Hello countEffect");
 	}, [count]);
+
 	return (
 		<div>
 			<h1>Foo</h1>

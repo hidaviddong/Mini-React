@@ -35,5 +35,5 @@ export interface FiberNode {
 	dom: HTMLElement | Text | null;
 	effectTag?: string;
 	stateHooks?: StateHook[];
-	effectHook?: EffectHook;
+	effectHooks?: EffectHook[];
 }

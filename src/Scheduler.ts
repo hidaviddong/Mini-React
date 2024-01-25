@@ -10,8 +10,6 @@ let wipRoot: FiberNode | null;
 let wipFiber: FiberNode | null;
 let currentRoot: FiberNode | null;
 let oldFiberArray: Array<FiberNode>;
-let stateHooks: Array<StateHook> = [];
-let stateHookIndex: number;
 function workLoop(deadline: IdleDeadline) {
 	let shouldYield = false;
 
@@ -31,24 +29,30 @@ function workLoop(deadline: IdleDeadline) {
 function commitRoot() {
 	typeof oldFiberArray === "object" && oldFiberArray.forEach(commitDelete);
 	wipRoot?.child && commitWork(wipRoot.child);
-	commitEffectHook();
+	commitEffectHooks();
 	currentRoot = wipRoot;
 
 	wipRoot = null;
 	oldFiberArray = [];
 }
-function commitEffectHook() {
+function commitEffectHooks() {
 	function run(fiber: FiberNode) {
 		if (!fiber.alternate) {
 			// init 需要调用callback
-			fiber.effectHook?.callback();
+			fiber.effectHooks?.forEach((hook) => {
+				hook.callback();
+			});
 		} else {
 			// 后续只需要更新的时候 值改变的时候调用副作用函数
-			const oldEffectHook = fiber.alternate.effectHook;
-			const shouldUpdate = oldEffectHook?.depends.some((o, i) => {
-				return o !== fiber.effectHook?.depends[i];
+			fiber.effectHooks?.forEach((newHook, i) => {
+				if (fiber.alternate?.effectHooks) {
+					const oldEffectHook = fiber.alternate.effectHooks[i];
+					const shouldUpdate = oldEffectHook?.depends.some((o, i) => {
+						return o !== newHook.depends[i];
+					});
+					shouldUpdate && newHook.callback();
+				}
 			});
-			shouldUpdate && fiber.effectHook?.callback();
 		}
 
 		fiber.child && run(fiber.child);
@@ -182,6 +186,7 @@ function initChildren(children: Array<any>, fiber: FiberNode) {
 
 function updateFunctionComponent(fiber: FiberNode) {
 	stateHooks = [];
+	effectHooks = [];
 	stateHookIndex = 0;
 	wipFiber = fiber;
 	const fiberType = fiber.type as FiberNodeFunctionType;
@@ -241,7 +246,8 @@ export function update() {
 		nextWorkOfUnit = wipRoot;
 	};
 }
-
+let stateHooks: Array<StateHook> = [];
+let stateHookIndex: number;
 export function useState(initValue: any) {
 	let oldHook: StateHook | null = null;
 	const currentFiber = wipFiber;
@@ -279,13 +285,16 @@ export function useState(initValue: any) {
 	return [stateHook.state, setState];
 }
 
+let effectHooks: Array<EffectHook> = [];
+
 export function useEffect(callback, depends) {
 	const effectHook: EffectHook = {
 		callback,
 		depends,
 	};
+	effectHooks.push(effectHook);
 	if (wipFiber) {
-		wipFiber.effectHook = effectHook;
+		wipFiber.effectHooks = effectHooks;
 	}
 }
 requestIdleCallback(workLoop);
