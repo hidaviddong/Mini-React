@@ -15,4 +15,5 @@
 - [x] decrease render time
 - [x] useState basic hook
 - [x] useState batch update 
-- [ ] useEffect hook
+- [x] useEffect basic hook
+- [x] useEffect callback and return callback
