@@ -215,4 +215,25 @@ export function update() {
 	};
 }
 
+export function useState(initValue: any) {
+	const currentFiber = wipFiber;
+	const oldHook = currentFiber?.alternate?.stateHook;
+	const stateHook = {
+		state: oldHook ? oldHook.state : initValue,
+	};
+	if (currentFiber) {
+		currentFiber.stateHook = stateHook;
+	}
+	function setState(action) {
+		stateHook.state = action(stateHook.state);
+		// 更新逻辑
+		wipRoot = {
+			...(currentFiber as FiberNode),
+			alternate: currentFiber,
+		};
+		nextWorkOfUnit = wipRoot;
+	}
+	return [stateHook.state, setState];
+}
+
 requestIdleCallback(workLoop);

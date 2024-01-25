@@ -15,6 +15,9 @@ export enum REACT_ELEMENT {
 }
 
 export type FiberNodeFunctionType = (...args) => FiberNode;
+type StateHook = {
+	state: any;
+};
 export interface FiberNode {
 	type?: FiberNodeFunctionType | string;
 	props: ReactElementProps;
@@ -26,4 +29,5 @@ export interface FiberNode {
 	index?: number;
 	dom: HTMLElement | Text | null;
 	effectTag?: string;
+	stateHook?: StateHook;
 }
