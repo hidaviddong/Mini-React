@@ -245,6 +245,10 @@ export function useState(initValue: any) {
 		currentFiber.stateHooks = stateHooks;
 	}
 	function setState(action) {
+		// 优化 当前后值相等时触发组件渲染
+		const eagerState =
+			typeof action === "function" ? action(stateHook.state) : action;
+		if (eagerState === stateHook.state) return;
 		stateHook.queue.push(typeof action === "function" ? action : () => action);
 		// 更新
 		wipRoot = {
