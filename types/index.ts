@@ -17,6 +17,7 @@ export enum REACT_ELEMENT {
 export type FiberNodeFunctionType = (...args) => FiberNode;
 export type StateHook = {
 	state: any;
+	queue: Array<any>;
 };
 export interface FiberNode {
 	type?: FiberNodeFunctionType | string;

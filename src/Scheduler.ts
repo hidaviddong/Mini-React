@@ -229,17 +229,23 @@ export function useState(initValue: any) {
 	if (currentFiber?.alternate?.stateHooks) {
 		oldHook = currentFiber.alternate.stateHooks[stateHookIndex];
 	}
-	const stateHook = {
+	const stateHook: StateHook = {
 		state: oldHook ? oldHook.state : initValue,
+		queue: oldHook ? oldHook.queue : [],
 	};
+
+	stateHook.queue.forEach((action) => {
+		stateHook.state = action(stateHook.state);
+	});
 	stateHookIndex++;
 	stateHooks.push(stateHook);
+	stateHook.queue = [];
 
 	if (currentFiber) {
 		currentFiber.stateHooks = stateHooks;
 	}
 	function setState(action) {
-		stateHook.state = action(stateHook.state);
+		stateHook.queue.push(action);
 		// 更新逻辑
 		wipRoot = {
 			...(currentFiber as FiberNode),

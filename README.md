@@ -13,5 +13,6 @@
 - [x] update nested child in tag
 - [x] dont render boolean node
 - [x] decrease render time
-- [ ] useState hook
+- [x] useState basic hook
+- [x] useState batch update 
 - [ ] useEffect hook
