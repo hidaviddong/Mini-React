@@ -1,11 +1,17 @@
-import { FiberNode, REACT_ELEMENT, FiberNodeFunctionType } from "../types";
+import {
+	FiberNode,
+	REACT_ELEMENT,
+	FiberNodeFunctionType,
+	StateHook,
+} from "../types";
 import type { ReactElement } from "../types";
 let nextWorkOfUnit: FiberNode | null;
 let wipRoot: FiberNode | null;
 let wipFiber: FiberNode | null;
 let currentRoot: FiberNode | null;
 let oldFiberArray: Array<FiberNode>;
-
+let stateHooks: Array<StateHook> = [];
+let stateHookIndex: number;
 function workLoop(deadline: IdleDeadline) {
 	let shouldYield = false;
 
@@ -156,6 +162,8 @@ function initChildren(children: Array<any>, fiber: FiberNode) {
 }
 
 function updateFunctionComponent(fiber: FiberNode) {
+	stateHooks = [];
+	stateHookIndex = 0;
 	wipFiber = fiber;
 	const fiberType = fiber.type as FiberNodeFunctionType;
 	const children = [fiberType(fiber.props)];
@@ -216,13 +224,19 @@ export function update() {
 }
 
 export function useState(initValue: any) {
+	let oldHook: StateHook | null = null;
 	const currentFiber = wipFiber;
-	const oldHook = currentFiber?.alternate?.stateHook;
+	if (currentFiber?.alternate?.stateHooks) {
+		oldHook = currentFiber.alternate.stateHooks[stateHookIndex];
+	}
 	const stateHook = {
 		state: oldHook ? oldHook.state : initValue,
 	};
+	stateHookIndex++;
+	stateHooks.push(stateHook);
+
 	if (currentFiber) {
-		currentFiber.stateHook = stateHook;
+		currentFiber.stateHooks = stateHooks;
 	}
 	function setState(action) {
 		stateHook.state = action(stateHook.state);
