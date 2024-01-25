@@ -5,8 +5,8 @@ function Foo() {
 	const [count, setCount] = useState(0);
 	const [anotherCount, setAnotherCount] = useState(1);
 	const handleButtonClick = () => {
-		setCount((c) => c + 1);
-		setAnotherCount((c) => c + 1);
+		setCount(count + 1);
+		setAnotherCount(anotherCount + 1);
 	};
 	return (
 		<div>

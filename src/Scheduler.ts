@@ -245,8 +245,8 @@ export function useState(initValue: any) {
 		currentFiber.stateHooks = stateHooks;
 	}
 	function setState(action) {
-		stateHook.queue.push(action);
-		// 更新逻辑
+		stateHook.queue.push(typeof action === "function" ? action : () => action);
+		// 更新
 		wipRoot = {
 			...(currentFiber as FiberNode),
 			alternate: currentFiber,
