@@ -40,7 +40,7 @@ function commitEffectHooks() {
 		if (!fiber.alternate) {
 			// init 需要调用callback
 			fiber.effectHooks?.forEach((hook) => {
-				hook.callback();
+				hook.cleanup = hook.callback();
 			});
 		} else {
 			// 后续只需要更新的时候 值改变的时候调用副作用函数
@@ -50,7 +50,10 @@ function commitEffectHooks() {
 					const shouldUpdate = oldEffectHook?.depends.some((o, i) => {
 						return o !== newHook.depends[i];
 					});
-					shouldUpdate && newHook.callback();
+
+					if (shouldUpdate) {
+						newHook.cleanup = newHook.callback();
+					}
 				}
 			});
 		}
@@ -58,7 +61,20 @@ function commitEffectHooks() {
 		fiber.child && run(fiber.child);
 		fiber.sibling && run(fiber.sibling);
 	}
-	if (wipRoot) run(wipRoot);
+	function runCleanup(fiber: FiberNode) {
+		fiber.alternate?.effectHooks?.forEach((hook) => {
+			if (hook.depends.length > 0) {
+				hook.cleanup?.();
+			}
+		});
+
+		fiber.child && runCleanup(fiber.child);
+		fiber.sibling && runCleanup(fiber.sibling);
+	}
+	if (wipRoot) {
+		runCleanup(wipRoot);
+		run(wipRoot);
+	}
 }
 function commitDelete(fiber: FiberNode) {
 	if (fiber.dom) {
@@ -291,6 +307,7 @@ export function useEffect(callback, depends) {
 	const effectHook: EffectHook = {
 		callback,
 		depends,
+		cleanup: null,
 	};
 	effectHooks.push(effectHook);
 	if (wipFiber) {

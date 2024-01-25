@@ -6,12 +6,24 @@ function Foo() {
 	const [anotherCount, setAnotherCount] = useState(1);
 
 	useEffect(() => {
-		console.log("Hello anotherCountEffect");
+		console.log("empty Effect");
+	}, []);
+	useEffect(() => {
+		console.log("countEffect");
+	}, [count]);
+	useEffect(() => {
+		console.log("anotherCountEffect");
+		return () => {
+			console.log("anotherCountEffect 0");
+		};
 	}, [anotherCount]);
 
 	useEffect(() => {
-		console.log("Hello countEffect");
-	}, [count]);
+		console.log("anotherCountEffect");
+		return () => {
+			console.log("anotherCountEffect 1");
+		};
+	}, [anotherCount]);
 
 	return (
 		<div>

@@ -22,6 +22,7 @@ export type StateHook = {
 export type EffectHook = {
 	callback: any;
 	depends: Array<any>;
+	cleanup: any;
 };
 export interface FiberNode {
 	type?: FiberNodeFunctionType | string;
