@@ -10,6 +10,7 @@ let wipRoot: FiberNode | null;
 let wipFiber: FiberNode | null;
 let currentRoot: FiberNode | null;
 let oldFiberArray: Array<FiberNode>;
+
 function workLoop(deadline: IdleDeadline) {
 	let shouldYield = false;
 
@@ -35,6 +36,7 @@ function commitRoot() {
 	wipRoot = null;
 	oldFiberArray = [];
 }
+
 function commitEffectHooks() {
 	function run(fiber: FiberNode) {
 		if (!fiber.alternate) {
@@ -262,6 +264,9 @@ export function update() {
 		nextWorkOfUnit = wipRoot;
 	};
 }
+
+// useState
+
 let stateHooks: Array<StateHook> = [];
 let stateHookIndex: number;
 export function useState(initValue: any) {
@@ -301,8 +306,8 @@ export function useState(initValue: any) {
 	return [stateHook.state, setState];
 }
 
+// useEffect
 let effectHooks: Array<EffectHook> = [];
-
 export function useEffect(callback, depends) {
 	const effectHook: EffectHook = {
 		callback,
