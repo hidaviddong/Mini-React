@@ -24,7 +24,11 @@ function workLoop(deadline: IdleDeadline) {
 	if (!nextWorkOfUnit && wipRoot) {
 		commitRoot();
 	}
-	requestIdleCallback(workLoop);
+	if (window.requestIdleCallback) {
+		window.requestIdleCallback(workLoop)
+	  } else {
+		window.setTimeout(workLoop, 1)
+	  }
 }
 
 function commitRoot() {

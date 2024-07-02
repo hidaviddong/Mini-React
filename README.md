@@ -17,3 +17,4 @@
 - [x] useState batch update 
 - [x] useEffect basic hook
 - [x] useEffect callback and return callback
+- [x] safari support
