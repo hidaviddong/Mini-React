@@ -323,4 +323,8 @@ export function useEffect(callback, depends) {
 		wipFiber.effectHooks = effectHooks;
 	}
 }
-requestIdleCallback(workLoop);
+if (window.requestIdleCallback) {
+	window.requestIdleCallback(workLoop)
+  } else {
+	window.setTimeout(workLoop, 1)
+  }
